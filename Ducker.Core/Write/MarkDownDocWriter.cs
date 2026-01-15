@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ducker.Core
 {
@@ -31,9 +28,9 @@ namespace Ducker.Core
                 File.WriteAllText(path, docContent.Document);
                 SaveIcons(docContent, path);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
         }
 
@@ -42,17 +39,16 @@ namespace Ducker.Core
         /// </summary>
         /// <param name="docContent">The contents of the document.</param>
         /// <param name="path">The output destination.</param>
-        private void SaveIcons(DocumentContent docContent, string path)
+        private static void SaveIcons(DocumentContent docContent, string path)
         {
             List<Bitmap> icons = docContent.Icons;
-            var copy = new List<Bitmap>(icons);
-            copy.RemoveAll(i => i == null);
             path = Path.GetDirectoryName(path);
             path = Path.Combine(path, docContent.RelativePathIcons);
             Directory.CreateDirectory(path);
 
-            foreach (var icon in copy)
+            foreach (var icon in icons)
             {
+                if (icon == null) continue;
                 string name = icon.Tag as string;
                 string fileName = Path.Combine(path, name + ".png");
                 icon.Save(fileName, ImageFormat.Png);

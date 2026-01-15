@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using Ducker.Core;
+﻿using Ducker.Core;
+using System;
 
 namespace Ducker
 {
@@ -20,14 +13,20 @@ namespace Ducker
             // full blown WPF app, so that Ducker can be included in automation workflows.
             // It never got there, but please feel free to give it a go if you read this :)
 
-            string pathToDll = @"C:\Users\emil\Documents\GitHub\Emu\Emu\Emu.Grasshopper\bin\Release\Emu.Grasshopper.gha";
-            
+            string pathToDll = @"X:\Nephila\bin\DebugR8\net8.0-windows\Nephila.Gh.gha";
+
+            ExportSettings settings = ExportSettings.Default;
+
             IGhaReader reader = new RhinoHeadlessGhaReader();
-            IDocGenerator docGen = new StandardMdDocGenerator();
+            IDocGenerator docGen = Activator.CreateInstance(settings.DocWriter) as IDocGenerator;
             IDocWriter docWrite = new MarkDownDocWriter();
 
-            DuckRunner ducker = new DuckRunner(pathToDll);
-            ducker.Run(reader, docGen, docWrite);
+            DuckRunner duckerRunner = new DuckRunner();
+            duckerRunner.AssemblyPath = pathToDll;
+
+            duckerRunner.TryInitializeRhino(reader);
+
+            duckerRunner.Run(reader, docGen, docWrite);
         }
     }
 }

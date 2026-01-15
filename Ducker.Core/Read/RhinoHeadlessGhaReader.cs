@@ -5,8 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ducker.Core
 {
@@ -40,10 +38,10 @@ namespace Ducker.Core
             // Set path to rhino system directory
             string envPath = Environment.GetEnvironmentVariable("path");
             string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            rhinoSystemDir = System.IO.Path.Combine(programFiles, "Rhino 7", "System");
-            grasshopperSystemDir = System.IO.Path.Combine(programFiles, "Rhino 7", "Plug-ins", "Grasshopper");
+            rhinoSystemDir = Path.Combine(programFiles, "Rhino 8", "System");
+            grasshopperSystemDir = Path.Combine(programFiles, "Rhino 8", "Plug-ins", "Grasshopper");
 
-            if (!System.IO.Directory.Exists(rhinoSystemDir))
+            if (!Directory.Exists(rhinoSystemDir))
             {
                 throw new Exception(string.Format("Rhino system dir not found: {0}", rhinoSystemDir));
             }
@@ -66,7 +64,7 @@ namespace Ducker.Core
         /// <returns>List of components included in the .gha file.</returns>
         public List<DuckerComponent> Read(string pathToDll)
         {
-            //AssemblyInitialize();
+            // AssemblyInitialize();
 
             var DLL = Assembly.LoadFile(pathToDll);
             string folder = Path.GetDirectoryName(pathToDll) + @"\";
@@ -132,7 +130,7 @@ namespace Ducker.Core
         }
 
         /// <summary>
-        /// Launch Rhino 7
+        /// Launch Rhino
         /// </summary>
         /// <param name="reserved1">0</param>
         /// <param name="reserved2">0</param>
@@ -141,7 +139,7 @@ namespace Ducker.Core
         internal static extern int LaunchInProcess(int reserved1, int reserved2);
 
         /// <summary>
-        /// Kill the running instance of R7.
+        /// Kill the running instance of Rhino
         /// </summary>
         /// <returns></returns>
         [DllImport("RhinoLibrary.dll")]
@@ -159,13 +157,13 @@ namespace Ducker.Core
 
             if (name.StartsWith("RhinoCommon"))
             {
-                var path = System.IO.Path.Combine(rhinoSystemDir, "RhinoCommon.dll");
+                var path = Path.Combine(rhinoSystemDir, "RhinoCommon.dll");
                 return Assembly.LoadFrom(path);
             }
 
             if (name.StartsWith("Grasshopper"))
             {
-                var path = System.IO.Path.Combine(grasshopperSystemDir, "Grasshopper.dll");
+                var path = Path.Combine(grasshopperSystemDir, "Grasshopper.dll");
                 return Assembly.LoadFrom(path);
             }
 
@@ -183,7 +181,7 @@ namespace Ducker.Core
         /// </summary>
         /// <param name="type">The type to check.</param>
         /// <returns></returns>
-        private bool IsDerivedFromGhComponent(Type type)
+        private static bool IsDerivedFromGhComponent(Type type)
         {
             //recursively walk through the type's inheritance tree.
             Type currType = type;
@@ -203,7 +201,7 @@ namespace Ducker.Core
         /// </summary>
         /// <param name="parameter">Grasshopper param object.</param>
         /// <returns></returns>
-        public DuckerParam CreateDuckerParam(dynamic parameter)
+        public static DuckerParam CreateDuckerParam(dynamic parameter)
         {
             DuckerParam duckerParam = new DuckerParam()
             {

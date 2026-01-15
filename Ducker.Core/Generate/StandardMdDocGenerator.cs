@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Ducker.Core
 {
@@ -22,13 +20,19 @@ namespace Ducker.Core
             DocumentContent docContent = new DocumentContent();
             StringBuilder builder = new StringBuilder();
 
+            builder.AppendLine(Header("PLUGIN PLACE HOLDER"));
+            builder.AppendLine(Paragraph(Bold("Components")));
+
+            builder.AppendLine(Paragraph("Test"));
+            builder.AppendLine(Paragraph("---"));
+
             foreach (var component in components)
             {
                 if (component.Exposure == "hidden" && settings.IgnoreHidden)
                     continue;
 
-                builder.AppendLine(string.Format("{0} {1}", Header(component.Name), Image("",
-                    docContent.RelativePathIcons, component.GetNameWithoutSpaces())));
+                builder.AppendLine(string.Format("{0} {1}", Header(component.Name, 2), Image("",
+                    docContent.RelativePathIcons, component.GetValidFileName())));
                 builder.Append(Paragraph(Bold(nameof(component.Name) + ":") + " " + component.Name));
                 builder.Append(Paragraph(Bold(nameof(component.NickName) + ":") + " " + component.NickName));
                 builder.Append(Paragraph(Bold(nameof(component.Description) + ":") + " " + component.Description));
@@ -49,7 +53,7 @@ namespace Ducker.Core
             }
 
             docContent.Document = builder.ToString();
-            docContent.Icons = base.ReadIcons(components);
+            docContent.Icons = ReadIcons(components);
             return docContent;
         }
     }
