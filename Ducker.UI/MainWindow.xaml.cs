@@ -145,7 +145,7 @@ namespace Ducker.UI
         private void BtnSetPath_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Grasshopper assemblies|*.gha"; ;
+            openFileDialog.Filter = "Grasshopper assemblies|*.gha";
 
             if (openFileDialog.ShowDialog() == true)
             {

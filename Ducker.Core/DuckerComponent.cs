@@ -52,7 +52,11 @@ namespace Ducker.Core
         /// </summary>
         public string Exposure { get; set; }
 
-
+        /// <summary>
+        /// Returns a valid file name, used for the icon file of the component.
+        /// </summary>
+        /// <param name="replacementChar"></param>
+        /// <returns></returns>
         public string GetValidFileName(char replacementChar = '_')
         {
             char[] invalidChars = Path.GetInvalidFileNameChars();
