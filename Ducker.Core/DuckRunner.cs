@@ -58,12 +58,16 @@ namespace Ducker.Core
         public void Run(IGhaReader reader, IDocGenerator docGen, IDocWriter docWrite, ExportSettings settings)
         {
             OnProgress("Extracting..", 15);
-            var duckers = reader.Read(this.AssemblyPath);
+            var plugin = reader.ReadPlugin(this.AssemblyPath);
+            var components = reader.ReadComponents(this.AssemblyPath);
+            
             OnProgress("Creating document..", 33);
-            var content = docGen.Create(duckers);
+            var content = docGen.Create(plugin, components);
+            
             OnProgress("Saving document..", 66); 
             string pathToOutput = CreateOutputPath(this.AssemblyPath, docGen.FileExtension);
             docWrite.Write(content, pathToOutput);
+            
             OnProgress("Done! Output folder is found next to input gha.", 100);
         }
 

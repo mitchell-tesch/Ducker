@@ -5,9 +5,9 @@ using System.Text;
 namespace Ducker.Core
 {
     /// <summary>
-    /// Generates a markdown with Emu style.
+    /// Generates a markdown with Header Table of Contents.
     /// </summary>
-    public class StandardMdDocGenerator : MarkDownDocGenerator
+    public class StandardWithTocMdDocGenerator : MarkDownDocGenerator
     {
         /// <summary>
         /// Creates the contents of the document based on components and the export settings
@@ -21,13 +21,32 @@ namespace Ducker.Core
             DocumentContent docContent = new DocumentContent();
             StringBuilder builder = new StringBuilder();
 
+            // Generate plugin header
+            builder.AppendLine(Header(plugin.Name, 1));
+
+            builder.AppendLine(Paragraph(Italic(plugin.Description)));
+            builder.AppendLine(Paragraph(Bold(plugin.Copyright)));
+            builder.AppendLine(Paragraph(Bold(plugin.Version)));
+            
+            builder.AppendLine(Paragraph(Divider()));
+            
+            // Generate components table of contents
+            builder.AppendLine(Paragraph(Bold("Components:")));
+
+            foreach (var component in components)
+            {
+                builder.AppendLine(($"- {HeaderLink(component.Name)}"));
+            }
+            builder.AppendLine(Paragraph(Divider()));
+
+            // Generate each component
             foreach (var component in components)
             {
                 if (component.Exposure == "hidden" && settings.IgnoreHidden)
                     continue;
 
-                builder.AppendLine(string.Format("{0} {1}", Header(component.Name), Image("",
-                    docContent.RelativePathIcons, component.GetValidFileName())));
+                builder.AppendLine($"{Header(component.Name, 2)} {Image("",
+                    docContent.RelativePathIcons, component.GetValidFileName())}");
                 builder.Append(Paragraph(Bold(nameof(component.Name) + ":") + " " + component.Name));
                 builder.Append(Paragraph(Bold(nameof(component.NickName) + ":") + " " + component.NickName));
                 builder.Append(Paragraph(Bold(nameof(component.Description) + ":") + " " + component.Description));

@@ -18,7 +18,7 @@ namespace Ducker.Core
         static string grasshopperSystemDir = null;
 
         /// <summary>
-        /// Initialize the assmbly.
+        /// Initialize the assembly.
         /// </summary>
         public void AssemblyInitialize()
         {
@@ -56,19 +56,38 @@ namespace Ducker.Core
             LaunchInProcess(0, 0);
 
         }
-
+        
+        public DuckerPlugin ReadPlugin(string pathToDll)
+        {
+            var dll = Assembly.LoadFile(pathToDll);
+            
+            // get assembly title attribute if available, otherwise use assembly name.
+            var name = dll.GetCustomAttribute<AssemblyTitleAttribute>()?
+                .Title ?? dll.GetName().Name;
+            
+            // get informational version attribute if available, otherwise use assembly version.
+            var version = dll.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion ?? dll.GetName().Version?.ToString();
+            
+            // attempt to get description and copy right from assembly attributes.
+            var description = dll.GetCustomAttribute<AssemblyDescriptionAttribute>()?
+                .Description ?? string.Empty;
+            var copyright = dll.GetCustomAttribute<AssemblyCopyrightAttribute>()?
+                .Copyright ?? string.Empty;
+            
+            return new DuckerPlugin(name, version, description, copyright);
+        }
+        
         /// <summary>
         /// Read the dll using a RhinoInside instance.
         /// </summary>
         /// <param name="pathToDll">Path tp the</param>
         /// <returns>List of components included in the .gha file.</returns>
-        public List<DuckerComponent> Read(string pathToDll)
+        public List<DuckerComponent> ReadComponents(string pathToDll)
         {
-            // AssemblyInitialize();
-
-            var DLL = Assembly.LoadFile(pathToDll);
+            var dll = Assembly.LoadFile(pathToDll);
             string folder = Path.GetDirectoryName(pathToDll) + @"\";
-            AssemblyName[] asm = DLL.GetReferencedAssemblies();
+            AssemblyName[] asm = dll.GetReferencedAssemblies();
             List<Assembly> dependencies = new List<Assembly>();
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             
@@ -84,7 +103,7 @@ namespace Ducker.Core
 
             List<DuckerComponent> duckers = new List<DuckerComponent>();
 
-            foreach (Type type in DLL.GetExportedTypes())
+            foreach (Type type in dll.GetExportedTypes())
             {
 
                 if (IsDerivedFromGhComponent(type) && !type.IsAbstract)
@@ -94,11 +113,11 @@ namespace Ducker.Core
 
                     try
                     {
-                        icon = c.Icon_24x24;
+                        if (c != null) icon = c.Icon_24x24;
                     }
                     catch (Exception)
                     {
-
+                        // ignored
                     }
 
                     DuckerComponent duckerComponent = new DuckerComponent()
@@ -120,11 +139,12 @@ namespace Ducker.Core
                     {
                         duckerComponent.Output.Add(CreateDuckerParam(parameter));
                     }
-                    Console.WriteLine(string.Format("Successfully read {0}", duckerComponent.Name));
+                    Console.WriteLine($"Successfully read {duckerComponent.Name}");
                     duckers.Add(duckerComponent);
                 }
             }
             ExitInProcess();
+            
             return duckers;
 
         }

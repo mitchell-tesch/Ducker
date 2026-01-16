@@ -7,11 +7,15 @@ namespace Ducker.Core
     /// </summary>
     public interface IGhaReader
     {
+        
+        DuckerPlugin ReadPlugin(string path);
+        
         /// <summary>
-        /// Triggers the read process.
+        /// Triggers the read of components.
         /// </summary>
         /// <param name="path">Path to the .gha file.</param>
         /// <returns>List of components included in the .gha file.</returns>
-        List<DuckerComponent> Read(string path);          
+        List<DuckerComponent> ReadComponents(string path);          
     }
 }
+    

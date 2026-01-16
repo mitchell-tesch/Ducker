@@ -25,11 +25,12 @@ namespace Ducker.Core
         /// <summary>
         /// Creates a markdown file based on the provided components. Uses default settings.
         /// </summary>
+        /// <param name="plugin">The plugin that the components belong to.</param>
         /// <param name="components">The components included in the gha.</param>
         /// <returns>Content of the document.</returns>
-        public DocumentContent Create(List<DuckerComponent> components)
+        public DocumentContent Create(DuckerPlugin plugin, List<DuckerComponent> components)
         {
-            return Create(components, ExportSettings.Default);
+            return Create(plugin, components, ExportSettings.Default);
         }
 
         protected static string GenerateParamTable(List<DuckerParam> compParameter)
@@ -82,6 +83,25 @@ namespace Ducker.Core
         }
         
         /// <summary>
+        /// Make a piece of text italic.
+        /// </summary>
+        /// <param name="text">Text to make italic.</param>
+        /// <returns>Italic formatted text.</returns>
+        protected static string Italic(string text)
+        {
+            return "*" + text + "*";
+        }
+        
+        /// <summary>
+        /// Creates a divider.
+        /// </summary>
+        /// <returns>Returns a divider.</returns>
+        protected static string Divider()
+        {
+            return "---";
+        }
+        
+        /// <summary>
         /// Put some text in a paragraph.
         /// </summary>
         /// <param name="text">Text to put in paragraph.</param>
@@ -102,7 +122,7 @@ namespace Ducker.Core
             string hashes = new string('#', level) + " ";
             return hashes + text;
         }
-
+        
         /// <summary>
         /// Generate level 1 formatted header.
         /// </summary>
@@ -112,7 +132,17 @@ namespace Ducker.Core
         {
             return Header(text, 1);
         }
-
+        
+        /// <summary>
+        /// Turn a string into a header link.
+        /// </summary>
+        /// <param name="text">Text to make header.</param>
+        /// <returns>Header formatted text.</returns>
+        protected static string HeaderLink(string text)
+        {
+            return "[" + text + "](#" + text.ToLower().Replace(" ", "-") + ")";
+        }
+        
         /// <summary>
         /// Create the text needed to place an image in the markdown file.
         /// </summary>
@@ -173,13 +203,14 @@ namespace Ducker.Core
 
             return copy;
         }
-
+        
         /// <summary>
         /// Creates the contents of the document based on components and the export settings
         /// </summary>
+        /// <param name="plugin">The plugin that the components belong to.</param>
         /// <param name="components">The components included in the gha.</param>
         /// <param name="settings">The output settings.</param>
         /// <returns>Content of the document.</returns>
-        public abstract DocumentContent Create(List<DuckerComponent> components, ExportSettings settings);
+        public abstract DocumentContent Create(DuckerPlugin plugin, List<DuckerComponent> components, ExportSettings settings);
     }
 }
