@@ -1,5 +1,6 @@
-﻿using Ducker.Core;
-using System;
+﻿using System;
+
+using Ducker.Core;
 
 namespace Ducker
 {
@@ -14,8 +15,15 @@ namespace Ducker
             // It never got there, but please feel free to give it a go if you read this :)
 
             string pathToDll = @"X:\Nephila\bin\DebugR8\net8.0-windows\Nephila.Gh.gha";
+            
+            if (!System.IO.File.Exists(pathToDll))
+            {
+                Console.WriteLine($"Error: File not found at {pathToDll}");
+                return;
+            }
 
             ExportSettings settings = ExportSettings.Default;
+            settings.DocWriter = settings.DocWriter ?? typeof(StandardMdDocGenerator);
 
             IGhaReader reader = new RhinoHeadlessGhaReader();
             IDocGenerator docGen = Activator.CreateInstance(settings.DocWriter) as IDocGenerator;
@@ -23,9 +31,9 @@ namespace Ducker
 
             DuckRunner duckerRunner = new DuckRunner();
             duckerRunner.AssemblyPath = pathToDll;
-
+            
             duckerRunner.TryInitializeRhino(reader);
-
+            
             duckerRunner.Run(reader, docGen, docWrite);
         }
     }

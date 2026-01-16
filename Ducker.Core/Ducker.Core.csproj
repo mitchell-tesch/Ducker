@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net8.0-windows</TargetFramework>
         <OutputType>Library</OutputType>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <RootNamespace>Ducker.Core</RootNamespace>
         <AssemblyName>Ducker.Core</AssemblyName>
         <LangVersion>12</LangVersion>

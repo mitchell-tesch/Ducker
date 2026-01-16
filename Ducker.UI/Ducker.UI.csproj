@@ -3,6 +3,7 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net8.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <RootNamespace>Ducker.UI</RootNamespace>
         <AssemblyName>Ducker.UI</AssemblyName>
         <ApplicationIcon>duck_64x64_NVp_icon.ico</ApplicationIcon>
