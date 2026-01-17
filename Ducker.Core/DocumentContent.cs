@@ -10,7 +10,7 @@ namespace Ducker.Core
     public class DocumentContent
     {
         /// <summary>
-        /// Defualt constructor.
+        /// Default constructor.
         /// </summary>
         public DocumentContent()
         {

@@ -45,7 +45,7 @@ namespace Ducker.Core
         {
             var rhino = reader as RhinoHeadlessGhaReader;
             OnProgress("Starting Rhino..", 0);
-            rhino.AssemblyInitialize();            
+            rhino?.AssemblyInitialize();
         }
         
         /// <summary>
@@ -62,7 +62,7 @@ namespace Ducker.Core
             var components = reader.ReadComponents(this.AssemblyPath);
             
             OnProgress("Creating document..", 33);
-            var content = docGen.Create(plugin, components);
+            var content = docGen.Create(plugin, components, settings);
             
             OnProgress("Saving document..", 66); 
             string pathToOutput = CreateOutputPath(this.AssemblyPath, docGen.FileExtension);
@@ -85,6 +85,7 @@ namespace Ducker.Core
 
             //Get directory, add subfolder "ducker".
             string directory = Path.GetDirectoryName(pathToDll);
+            if (string.IsNullOrEmpty(directory)) throw new InvalidOperationException();
             string combined = Path.Combine(directory, "ducker", fileName);
 
             return combined;

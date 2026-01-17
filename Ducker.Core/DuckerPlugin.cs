@@ -17,22 +17,22 @@ namespace Ducker.Core
         /// <summary>
         /// The name of the plugin.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; }
         
         /// <summary>
         /// Version of the plugin.
         /// </summary>
-        public string Version { get; set; }
+        public string Version { get; }
         
         /// <summary>
         /// Description of the plugin.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; }
         
         /// <summary>
         /// Copyright of the plugin.
         /// </summary>
-        public string Copyright{ get; set; }
+        public string Copyright{ get; }
 
         /// <summary>
         /// Returns this.Name

@@ -21,16 +21,19 @@ namespace Ducker.Core
             try
             {
                 string dir = Path.GetDirectoryName(path);
+                if (string.IsNullOrEmpty(dir)) throw new InvalidOperationException();
+                
                 if(!Directory.Exists(dir))
                 {
                     Directory.CreateDirectory(dir);
                 }
+                
                 File.WriteAllText(path, docContent.Document);
                 SaveIcons(docContent, path);
             }
             catch (Exception)
             {
-                throw;
+                // ignored
             }
         }
 
@@ -41,18 +44,31 @@ namespace Ducker.Core
         /// <param name="path">The output destination.</param>
         private static void SaveIcons(DocumentContent docContent, string path)
         {
-            List<Bitmap> icons = docContent.Icons;
-            path = Path.GetDirectoryName(path);
-            path = Path.Combine(path, docContent.RelativePathIcons);
-            Directory.CreateDirectory(path);
-
-            foreach (var icon in icons)
+            try
             {
-                if (icon == null) continue;
-                string name = icon.Tag as string;
-                string fileName = Path.Combine(path, name + ".png");
-                icon.Save(fileName, ImageFormat.Png);
-            }  
+                List<Bitmap> icons = docContent.Icons;
+
+                path = Path.GetDirectoryName(path);
+                if (string.IsNullOrEmpty(path)) throw new InvalidOperationException();
+
+                path = Path.Combine(path, docContent.RelativePathIcons);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                foreach (var icon in icons)
+                {
+                    if (icon == null) continue;
+                    string name = icon.Tag as string;
+                    string fileName = Path.Combine(path, name + ".png");
+                    icon.Save(fileName, ImageFormat.Png);
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
     }
 }

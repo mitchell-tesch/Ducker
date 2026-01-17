@@ -25,32 +25,32 @@ namespace Ducker.Core
         /// <summary>
         /// The output parameters of the component.
         /// </summary>
-        public List<DuckerParam> Output { get; set; }
+        public List<DuckerParam> Output { get; }
 
         /// <summary>
         /// The description of the component.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; init; }
 
         /// <summary>
         /// The name of the component.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; init; }
 
         /// <summary>
         /// The nick name of the component.
         /// </summary>
-        public string NickName { get; set; }
+        public string NickName { get; init; }
 
         /// <summary>
         /// The icon of the component (png)
         /// </summary>
-        public Bitmap Icon { get; set; }
+        public Bitmap Icon { get; init; }
         
         /// <summary>
         /// The exposure level of the component as string.
         /// </summary>
-        public string Exposure { get; set; }
+        public string Exposure { get; init; }
 
         /// <summary>
         /// Returns a valid file name, used for the icon file of the component.
