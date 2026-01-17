@@ -156,7 +156,7 @@ namespace Ducker.Core
         }
 
         /// <summary>
-        /// Reades the icons of components.
+        /// Reads the icons of components.
         /// </summary>
         /// <param name="components">Components.</param>
         /// <returns>Synced list of icons.</returns>
@@ -170,6 +170,7 @@ namespace Ducker.Core
 
                 Bitmap clonedBmp = BitmapDeepClone(component.Icon);
 
+                if (clonedBmp == null) continue;
                 clonedBmp.Tag = component.GetValidFileName();
 
                 icons.Add(clonedBmp);
@@ -184,7 +185,7 @@ namespace Ducker.Core
         /// </summary>
         /// <param name="original"></param>
         /// <returns></returns>
-        public static Bitmap BitmapDeepClone(Bitmap original)
+        private static Bitmap BitmapDeepClone(Bitmap original)
         {
             if (original == null)
             {

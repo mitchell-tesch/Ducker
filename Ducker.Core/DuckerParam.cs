@@ -10,17 +10,17 @@ namespace Ducker.Core
         /// <summary>
         /// Description of the parameter.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; init; }
 
         /// <summary>
         /// The name of the parameter.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; init; }
 
         /// <summary>
         /// The nickname of the parameter.
         /// </summary>
-        public string NickName { get; set; }
+        public string NickName { get; init; }
 
         /// <summary>
         /// Returns this.Name

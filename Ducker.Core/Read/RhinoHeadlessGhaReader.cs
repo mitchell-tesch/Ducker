@@ -13,21 +13,21 @@ namespace Ducker.Core
     /// </summary>
     public class RhinoHeadlessGhaReader : IGhaReader
     {
-        static bool initialized = false;
-        static string rhinoSystemDir = null;
-        static string grasshopperSystemDir = null;
+        private static bool _initialized = false;
+        private static string _rhinoSystemDir = null;
+        private static string _grasshopperSystemDir = null;
 
         /// <summary>
         /// Initialize the assembly.
         /// </summary>
         public void AssemblyInitialize()
         {
-            if (initialized)
+            if (_initialized)
             {
                 return;
                 //throw new InvalidOperationException("AssemblyInitialize should only be called once");
             }
-            initialized = true;
+            _initialized = true;
 
             // Ensure we are 64 bit
             if (!Environment.Is64BitProcess)
@@ -38,18 +38,18 @@ namespace Ducker.Core
             // Set path to rhino system directory
             string envPath = Environment.GetEnvironmentVariable("path");
             string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            rhinoSystemDir = Path.Combine(programFiles, "Rhino 8", "System");
-            grasshopperSystemDir = Path.Combine(programFiles, "Rhino 8", "Plug-ins", "Grasshopper");
+            _rhinoSystemDir = Path.Combine(programFiles, "Rhino 8", "System");
+            _grasshopperSystemDir = Path.Combine(programFiles, "Rhino 8", "Plug-ins", "Grasshopper");
 
-            if (!Directory.Exists(rhinoSystemDir))
+            if (!Directory.Exists(_rhinoSystemDir))
             {
-                throw new Exception(string.Format("Rhino system dir not found: {0}", rhinoSystemDir));
+                throw new Exception(string.Format("Rhino system dir not found: {0}", _rhinoSystemDir));
             }
 
             // Add rhino system directory to path (for RhinoLibrary.dll)
-            Environment.SetEnvironmentVariable("path", envPath + ";" + rhinoSystemDir);
+            Environment.SetEnvironmentVariable("path", envPath + ";" + _rhinoSystemDir);
 
-            // Add hook for .Net assmbly resolve (for RhinoCommmon.dll)
+            // Add hook for .Net assembly resolve (for RhinoCommon.dll)
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
             // Start headless Rhino process
@@ -105,43 +105,43 @@ namespace Ducker.Core
 
             foreach (Type type in dll.GetExportedTypes())
             {
+                if (!IsDerivedFromGhComponent(type) || type.IsAbstract) continue;
+                
+                dynamic c = Activator.CreateInstance(type);
+                if (c == null) continue;
+                
+                Bitmap icon = null;
 
-                if (IsDerivedFromGhComponent(type) && !type.IsAbstract)
+                try
                 {
-                    dynamic c = Activator.CreateInstance(type);
-                    Bitmap icon = null;
-
-                    try
-                    {
-                        if (c != null) icon = c.Icon_24x24;
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
-
-                    DuckerComponent duckerComponent = new DuckerComponent()
-                    {
-                        Name = c.Name,
-                        NickName = c.NickName,
-                        Description = c.Description,
-                        Icon = icon,
-                         Exposure = c.Exposure.ToString()
-                    };
-
-                    dynamic parameters = c.Params;
-                    foreach (var parameter in parameters.Input)
-                    {
-                        duckerComponent.Input.Add(CreateDuckerParam(parameter));
-                    }
-
-                    foreach (var parameter in parameters.Output)
-                    {
-                        duckerComponent.Output.Add(CreateDuckerParam(parameter));
-                    }
-                    Console.WriteLine($"Successfully read {duckerComponent.Name}");
-                    duckers.Add(duckerComponent);
+                    icon = c.Icon_24x24;
                 }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
+                DuckerComponent duckerComponent = new DuckerComponent()
+                {
+                    Name = c.Name,
+                    NickName = c.NickName,
+                    Description = c.Description,
+                    Icon = icon,
+                    Exposure = c.Exposure.ToString()
+                };
+
+                dynamic parameters = c.Params;
+                foreach (var parameter in parameters.Input)
+                {
+                    duckerComponent.Input.Add(CreateDuckerParam(parameter));
+                }
+
+                foreach (var parameter in parameters.Output)
+                {
+                    duckerComponent.Output.Add(CreateDuckerParam(parameter));
+                }
+                Console.WriteLine($"Successfully read {duckerComponent.Name}");
+                duckers.Add(duckerComponent);
             }
             ExitInProcess();
             
@@ -166,7 +166,7 @@ namespace Ducker.Core
         internal static extern int ExitInProcess();
 
         /// <summary>
-        /// Resolve Grasshopper and Rhinocommon references.
+        /// Resolve Grasshopper and RhinoCommon references.
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="args">Args</param>
@@ -177,13 +177,13 @@ namespace Ducker.Core
 
             if (name.StartsWith("RhinoCommon"))
             {
-                var path = Path.Combine(rhinoSystemDir, "RhinoCommon.dll");
+                var path = Path.Combine(_rhinoSystemDir, "RhinoCommon.dll");
                 return Assembly.LoadFrom(path);
             }
 
             if (name.StartsWith("Grasshopper"))
             {
-                var path = Path.Combine(grasshopperSystemDir, "Grasshopper.dll");
+                var path = Path.Combine(_grasshopperSystemDir, "Grasshopper.dll");
                 return Assembly.LoadFrom(path);
             }
 

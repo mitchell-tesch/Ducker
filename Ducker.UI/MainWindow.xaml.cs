@@ -131,7 +131,7 @@ namespace Ducker.UI
 
             await Task.Run(() =>
             {
-                _duckRunner.Run(reader, docGen, docWrite);
+                _duckRunner.Run(reader, docGen, docWrite, settings);
                 Thread.Sleep(4000); //Show the complete msg in progress bar for 1 sec.
                 DuckRunner_Progress(this, new ProgressEventArgs("", 0));
             });

@@ -5,7 +5,7 @@ using System.Text;
 namespace Ducker.Core
 {
     /// <summary>
-    /// Generates a markdown with Header Table of Contents.
+    /// Generates a mark-down with Header Table of Contents.
     /// </summary>
     public class StandardWithTocMdDocGenerator : MarkDownDocGenerator
     {
@@ -32,7 +32,6 @@ namespace Ducker.Core
             
             // Generate components table of contents
             builder.AppendLine(Paragraph(Bold("Components:")));
-
             foreach (var component in components)
             {
                 builder.AppendLine(($"- {HeaderLink(component.Name)}"));
@@ -45,20 +44,41 @@ namespace Ducker.Core
                 if (component.Exposure == "hidden" && settings.IgnoreHidden)
                     continue;
 
-                builder.AppendLine($"{Header(component.Name, 2)} {Image("",
-                    docContent.RelativePathIcons, component.GetValidFileName())}");
-                builder.Append(Paragraph(Bold(nameof(component.Name) + ":") + " " + component.Name));
-                builder.Append(Paragraph(Bold(nameof(component.NickName) + ":") + " " + component.NickName));
-                builder.Append(Paragraph(Bold(nameof(component.Description) + ":") + " " + component.Description));
+                if (settings.ExportIcons)
+                {
+                    builder.AppendLine($"{Header(component.Name, 2)} {Image("",
+                        docContent.RelativePathIcons, component.GetValidFileName())}");
+                }
+                else
+                {
+                    builder.AppendLine($"{Header(component.Name, 2)}");
+                }
+
+                if (settings.Name)
+                {
+                    builder.Append(Paragraph(Bold(nameof(component.Name) + ":") + " " + component.Name));
+                }
+
+                if (settings.NickName)
+                {
+                    builder.Append(Paragraph(Bold(nameof(component.NickName) + ":") + " " + component.NickName));
+                }
+
+                if (settings.Description)
+                {
+                    builder.Append(Paragraph(Bold(nameof(component.Description) + ":") + " " + component.Description));
+                }
+                
                 builder.Append(Environment.NewLine);
 
-                if (component.Input.Count > 0)
+                if (settings.Parameters & component.Input.Count > 0)
                 {
                     builder.AppendLine(Header(nameof(component.Input), 3));
                     string table = GenerateParamTable(component.Input);
                     builder.Append(table);
                 }
-                if (component.Output.Count > 0)
+                
+                if (settings.Parameters & component.Output.Count > 0)
                 {
                     builder.AppendLine(Header(nameof(component.Output), 3));
                     string table = GenerateParamTable(component.Output);
@@ -67,7 +87,12 @@ namespace Ducker.Core
             }
 
             docContent.Document = builder.ToString();
-            docContent.Icons = ReadIcons(components);
+
+            if (settings.ExportIcons)
+            {
+                docContent.Icons = ReadIcons(components);
+            }
+            
             return docContent;
         }
     }

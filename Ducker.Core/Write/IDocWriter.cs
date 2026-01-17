@@ -3,7 +3,7 @@ namespace Ducker.Core
 {
     /// <summary>
     /// Handles serializing the document content into an actual file. Can be as simple as
-    /// saving the file to the harddrive or putting the contents in a db.
+    /// saving the file to the hard drive or putting the contents in a db.
     /// </summary>
     public interface IDocWriter
     {
