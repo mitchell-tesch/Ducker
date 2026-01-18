@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -16,25 +15,19 @@ namespace Ducker.Core
         /// </summary>
         /// <param name="docContent">The contents of the document.</param>
         /// <param name="path">The output destination.</param>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory of the output path does not exist.</exception>
         public void Write(DocumentContent docContent, string path)
         {
-            try
+            string dir = Path.GetDirectoryName(path);
+            if (string.IsNullOrEmpty(dir)) throw new DirectoryNotFoundException($"Invalid output path: {path}");
+            
+            if(!Directory.Exists(dir))
             {
-                string dir = Path.GetDirectoryName(path);
-                if (string.IsNullOrEmpty(dir)) throw new InvalidOperationException();
-                
-                if(!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-                
-                File.WriteAllText(path, docContent.Document);
-                SaveIcons(docContent, path);
+                Directory.CreateDirectory(dir);
             }
-            catch (Exception)
-            {
-                // ignored
-            }
+            
+            File.WriteAllText(path, docContent.Document);
+            SaveIcons(docContent, path);
         }
 
         /// <summary>
@@ -42,33 +35,30 @@ namespace Ducker.Core
         /// </summary>
         /// <param name="docContent">The contents of the document.</param>
         /// <param name="path">The output destination.</param>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the directory of the output path does not exist.</exception>
         private static void SaveIcons(DocumentContent docContent, string path)
         {
-            try
+            List<Bitmap> icons = docContent.Icons;
+
+            string dir = Path.GetDirectoryName(path);
+            if (string.IsNullOrEmpty(dir)) throw new DirectoryNotFoundException($"Invalid output path: {path}");
+
+            path = Path.Combine(dir, docContent.RelativePathIcons);
+            if (!Directory.Exists(path))
             {
-                List<Bitmap> icons = docContent.Icons;
-
-                path = Path.GetDirectoryName(path);
-                if (string.IsNullOrEmpty(path)) throw new InvalidOperationException();
-
-                path = Path.Combine(path, docContent.RelativePathIcons);
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-
-                foreach (var icon in icons)
-                {
-                    if (icon == null) continue;
-                    string name = icon.Tag as string;
-                    string fileName = Path.Combine(path, name + ".png");
-                    icon.Save(fileName, ImageFormat.Png);
-                }
+                Directory.CreateDirectory(path);
             }
-            catch (Exception)
+
+            foreach (var icon in icons)
             {
-                // ignored
+                if (icon == null) continue;
+                
+                string name = icon.Tag as string;
+                string fileName = Path.Combine(path, name + ".png");
+                
+                icon.Save(fileName, ImageFormat.Png);
             }
+            
         }
     }
 }

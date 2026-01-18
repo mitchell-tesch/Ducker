@@ -43,7 +43,7 @@ namespace Ducker.Core
 
             if (!Directory.Exists(_rhinoSystemDir))
             {
-                throw new Exception(string.Format("Rhino system dir not found: {0}", _rhinoSystemDir));
+                throw new DirectoryNotFoundException($"Rhino system dir not found: {_rhinoSystemDir}");
             }
 
             // Add rhino system directory to path (for RhinoLibrary.dll)
@@ -53,7 +53,7 @@ namespace Ducker.Core
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
             // Start headless Rhino process
-            LaunchInProcess(0, 0);
+            _ = LaunchInProcess(0, 0);
 
         }
         

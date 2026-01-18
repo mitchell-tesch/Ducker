@@ -7,20 +7,20 @@ namespace Ducker
     internal static class Program
     {
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             if (args.Length == 0 || args[0] == "--help" || args[0] == "-h")
             {
                 PrintUsage();
-                return;
+                return 0;
             }
 
             string pathToDll = args[0];
             
             if (!System.IO.File.Exists(pathToDll))
             {
-                Console.WriteLine($"Error: File not found at {pathToDll}");
-                return;
+                Console.WriteLine($"An error has occured: File not found at {pathToDll}");
+                return 1;
             }
             
             ExportSettings settings = ParseSettings(args);
@@ -29,16 +29,28 @@ namespace Ducker
             IDocGenerator docGen = Activator.CreateInstance(settings.DocWriter) as IDocGenerator;
             IDocWriter docWrite = new MarkDownDocWriter();
 
-            DuckRunner duckerRunner = new DuckRunner();
-            duckerRunner.AssemblyPath = pathToDll;
-            duckerRunner.TryInitializeRhino(reader);
-            duckerRunner.Run(reader, docGen, docWrite);
+            DuckRunner duckerRunner = new DuckRunner
+            {
+                AssemblyPath = pathToDll
+            };
+            
+            try
+            {
+                duckerRunner.TryInitializeRhino(reader);
+                duckerRunner.Run(reader, docGen, docWrite, settings);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"A fatal error has occured: {e.Message}");
+                Console.WriteLine(e.StackTrace);
+                return 1;
+            }
+            return 0;
+
         }
-        
-        
-        static ExportSettings ParseSettings(string[] args)
+
+        private static ExportSettings ParseSettings(string[] args)
         {
-            // Initialize with all properties as false
             var settings = new ExportSettings()
             {
                 IgnoreHidden = true,
@@ -102,6 +114,7 @@ namespace Ducker
             Console.WriteLine("Usage: Ducker <pathToDll> [flags]");
             Console.WriteLine("\nOptions:");
             Console.WriteLine("  -w, --writer <type>    Documentation generator (default: standard)");
+            Console.WriteLine("                             Valid types: standard, standardToC");
             Console.WriteLine("  --include_hidden       Include hidden components");
             Console.WriteLine("  --no_name              Include component names");
             Console.WriteLine("  --no_nickname          Include nicknames");
