@@ -16,27 +16,23 @@ namespace Ducker.Core
         /// <param name="components">The components included in the gha.</param>
         /// <param name="settings">The output settings.</param>
         /// <returns>Content of the document.</returns>
-        public override DocumentContent Create(DuckerPlugin plugin, List<DuckerComponent> components, ExportSettings settings)
+        public override DocumentContent Create(DuckerPlugin plugin, List<DuckerComponent> components,
+            ExportSettings settings)
         {
             DocumentContent docContent = new DocumentContent();
             StringBuilder builder = new StringBuilder();
 
             // Generate plugin header
-            builder.AppendLine(Header(plugin.Name, 1));
-
+            builder.AppendLine(Header($"{plugin.Name} ({plugin.Version})", 1));
             builder.AppendLine(Paragraph(Italic(plugin.Description)));
-            builder.AppendLine(Paragraph(Bold(plugin.Copyright)));
-            builder.AppendLine(Paragraph(Bold(plugin.Version)));
-            
-            builder.AppendLine(Paragraph(Divider()));
+            builder.AppendLine(Paragraph(plugin.Copyright));
             
             // Generate components table of contents
-            builder.AppendLine(Paragraph(Bold("Components:")));
+            builder.AppendLine(Paragraph(Header("Components:", 2)));
             foreach (var component in components)
             {
                 builder.AppendLine(($"- {HeaderLink(component.Name)}"));
             }
-            builder.AppendLine(Paragraph(Divider()));
 
             // Generate each component
             foreach (var component in components)
