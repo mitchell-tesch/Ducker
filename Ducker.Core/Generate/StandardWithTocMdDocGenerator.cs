@@ -31,6 +31,9 @@ namespace Ducker.Core
             builder.AppendLine(Paragraph(Header("Components:", 2)));
             foreach (var component in components)
             {
+                if (component.Exposure == "hidden" && settings.IgnoreHidden)
+                    continue;
+
                 builder.AppendLine(($"- {HeaderLink(component.Name)}"));
             }
 

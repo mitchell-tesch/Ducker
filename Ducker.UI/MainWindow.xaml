@@ -59,7 +59,7 @@
         </ComboBox>
       </StackPanel>
 
-        <CheckBox Grid.Row="1" Grid.Column="0" Margin="0,0,0,0" Name="cbxIgnoreHidden" IsChecked="False">Ignore hidded</CheckBox>
+        <CheckBox Grid.Row="1" Grid.Column="0" Margin="0,0,0,0" Name="cbxIgnoreHidden" IsChecked="True">Ignore hidded</CheckBox>
         <CheckBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" Name="cbxExportIcons" IsChecked="True">Export Icons</CheckBox>
         
         <CheckBox Grid.Row="2" Grid.Column="0" Margin="0,0,0,0" Name="cbxName" IsChecked="True">Name</CheckBox>
