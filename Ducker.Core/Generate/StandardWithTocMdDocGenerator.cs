@@ -67,7 +67,7 @@ namespace Ducker.Core
                 {
                     builder.Append(Paragraph(Bold(nameof(component.Description) + ":") + " " + component.Description));
                 }
-                
+               
                 builder.Append(Environment.NewLine);
 
                 if (settings.Parameters & component.Input.Count > 0)
@@ -76,13 +76,17 @@ namespace Ducker.Core
                     string table = GenerateParamTable(component.Input);
                     builder.Append(table);
                 }
-                
+
+                builder.Append(Environment.NewLine);
+
                 if (settings.Parameters & component.Output.Count > 0)
                 {
                     builder.AppendLine(Header(nameof(component.Output), 3));
                     string table = GenerateParamTable(component.Output);
                     builder.Append(table);
                 }
+
+                builder.Append(Environment.NewLine);
             }
 
             docContent.Document = builder.ToString();
