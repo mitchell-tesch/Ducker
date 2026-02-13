@@ -37,6 +37,8 @@ namespace Ducker.Core
                 builder.AppendLine(($"- {HeaderLink(component.Name)}"));
             }
 
+            builder.Append(Environment.NewLine);
+
             // Generate each component
             foreach (var component in components)
             {
